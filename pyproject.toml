@@ -1,0 +1,42 @@
+[project]
+name = "rpi"
+version = "0.1.0"
+description = "Retail Price Intelligence Platform: bronze/silver/gold price analytics for supermarket data"
+requires-python = ">=3.11"
+dependencies = [
+    "psycopg[binary,pool]>=3.1",
+    "polars>=1.0",
+    "numpy>=1.26",
+    "rapidfuzz>=3.6",
+    "pyyaml>=6",
+    "prefect>=3.0",
+    "dbt-core>=1.8",
+    "dbt-postgres>=1.8",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "streamlit>=1.38",
+    "plotly>=5.22",
+    "httpx>=0.27",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5", "playwright>=1.45"]
+
+[project.scripts]
+rpi = "rpi.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["rpi*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = ["app", "pipeline", "api", "db", "checks", "notify", "deploy", ".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.setuptools.package-data]
+rpi = ["migrations/*.sql", "reference/*.csv"]

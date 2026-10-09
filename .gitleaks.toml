@@ -1,0 +1,8 @@
+# Secret-scanning rules: gitleaks defaults plus nothing hidden. Placeholders such as the throw-away
+# development password `rpi` are not matched by any default rule, so no allowlist entries are needed.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "generated binary assets"
+paths = ['''docs/screenshots/.*\.png''']

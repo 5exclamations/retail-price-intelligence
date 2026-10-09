@@ -1,0 +1,10 @@
+.git
+.venv
+data
+*.md
+!README.md
+warehouse/target
+warehouse/logs
+**/__pycache__
+.pytest_cache
+docs/screenshots

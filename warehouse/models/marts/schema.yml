@@ -1,0 +1,155 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: Calendar spine covering the observed price history.
+    columns:
+      - name: date_key
+        tests: [unique, not_null]
+      - name: date_day
+        tests: [unique, not_null]
+
+  - name: dim_retailer
+    columns:
+      - name: retailer_code
+        tests: [unique, not_null]
+      - name: price_model
+        tests:
+          - accepted_values:
+              arguments: {values: ['single', 'zoned']}
+
+  - name: dim_price_point
+    description: >
+      What a shopper faces: a single-price chain, or one measured price zone of a zoned chain.
+      A zoned retailer never appears without its zone.
+    columns:
+      - name: price_point_key
+        tests: [unique, not_null]
+      - name: retailer_code
+        tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('dim_retailer'), field: retailer_code}
+    tests:
+      # A zoned chain must always be split by zone; a single-price chain must never be.
+      - zoned_price_points_have_zone: {}
+
+  - name: dim_store
+    columns:
+      - name: store_key
+        tests: [unique, not_null]
+      - name: price_zone
+        tests: [not_null]
+
+  - name: dim_product
+    description: Published canonical products (quarantined merges excluded).
+    columns:
+      - name: product_key
+        tests: [unique, not_null]
+      - name: product_name
+        tests: [not_null]
+      - name: category
+        tests: [not_null]
+      - name: unit_type
+        tests:
+          - accepted_values:
+              arguments: {values: ['g', 'ml', 'pcs', 'kg_bulk']}
+
+  - name: dim_category
+    columns:
+      - name: category
+        tests: [unique, not_null]
+
+  - name: dim_store_item
+    columns:
+      - name: store_item_id
+        tests: [unique, not_null]
+      - name: product_key
+        tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('dim_product'), field: product_key}
+      - name: match_status
+        tests:
+          - accepted_values:
+              arguments: {values: ['auto', 'singleton', 'pending_review', 'approved']}
+
+  - name: fct_price_daily
+    description: >
+      Grain: store item x price point x day. Prices are integer qepik (1 AZN = 100 qepik).
+      regular_price_qepik is the last ordinary price actually observed, not the retailer's claim.
+    tests:
+      - unique_combination:
+          arguments: {columns: [store_item_id, price_point_key, observed_date]}
+    columns:
+      - name: price_qepik
+        tests: [not_null, positive, integer_typed]
+      - name: old_price_qepik
+        tests: [positive, integer_typed]
+      - name: regular_price_qepik
+        tests: [not_null, positive, integer_typed]
+      - name: price_point_key
+        tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('dim_price_point'), field: price_point_key}
+      - name: date_key
+        tests:
+          - relationships:
+              arguments: {to: ref('dim_date'), field: date_key}
+      - name: observed_at
+        tests: [not_null]
+
+  - name: mart_price_current
+    description: Latest observation per product and price point, with its observation time.
+    columns:
+      - name: observed_at
+        tests: [not_null]
+      - name: product_key
+        tests:
+          - relationships:
+              arguments: {to: ref('dim_product'), field: product_key}
+
+  - name: mart_price_index
+    description: Fixed-base matched-model Jevons index (see docs/METHODOLOGY.md).
+    tests:
+      - unique_combination:
+          arguments: {columns: [week_start, category]}
+    columns:
+      - name: index_regular
+        tests:
+          - not_null
+          - between_values:
+              arguments: {min_value: 20, max_value: 500}
+      - name: n_items
+        tests: [positive]
+
+  - name: mart_retailer_competitiveness
+    tests:
+      - unique_combination:
+          arguments: {columns: [week_start, price_point_key]}
+    columns:
+      - name: price_index_vs_market
+        tests:
+          - between_values:
+              arguments: {min_value: 40, max_value: 250}
+      - name: share_cheapest_pct
+        tests:
+          - between_values:
+              arguments: {min_value: 0, max_value: 100}
+
+  - name: mart_promo_analysis
+    columns:
+      - name: claimed_discount_bp
+        tests:
+          - not_null
+          - between_values:
+              arguments: {min_value: 1, max_value: 9999}
+
+  - name: mart_cheapest_basket
+    tests:
+      - unique_combination:
+          arguments: {columns: [observed_date, price_point_key]}
+    columns:
+      - name: total_qepik
+        tests: [positive, integer_typed]

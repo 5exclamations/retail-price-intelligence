@@ -1,0 +1,13 @@
+# Connection comes from the environment so the same file works locally, in Docker and in CI.
+rpi:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('RPI_PG_HOST', 'localhost') }}"
+      port: "{{ env_var('RPI_PG_PORT', '5432') | int }}"
+      user: "{{ env_var('RPI_PG_USER', 'rpi') }}"
+      password: "{{ env_var('RPI_PG_PASSWORD', 'rpi') }}"
+      dbname: "{{ env_var('RPI_PG_DBNAME', 'rpi') }}"
+      schema: gold
+      threads: 4

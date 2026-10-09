@@ -1,0 +1,44 @@
+name: rpi_warehouse
+version: "0.1.0"
+config-version: 2
+profile: rpi
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Products must be sold by this many retailers to qualify for the default shopping basket.
+  basket_min_retailers: 5
+  basket_items_per_category: 2
+  # A week needs at least this many observed days to enter the price indices.
+  index_min_days_per_week: 4
+  # A claimed discount that exceeds the market-based one by more than this (basis points) is "inflated".
+  inflated_gap_bp: 1500
+
+models:
+  rpi_warehouse:
+    staging:
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: table
+      +schema: staging
+    marts:
+      +materialized: table
+      +schema: gold
+
+seeds:
+  rpi_warehouse:
+    +schema: gold
+    basket_quantity:
+      +column_types:
+        quantity: integer
+
+snapshots:
+  rpi_warehouse:
+    +target_schema: gold

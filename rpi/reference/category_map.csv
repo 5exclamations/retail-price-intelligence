@@ -1,0 +1,51 @@
+retailer_code,raw_category,category
+baku_fresh,Süd məhsulları,Dairy & Eggs
+baku_fresh,Çörək-bulka,Bakery
+baku_fresh,İçkilər,Beverages
+baku_fresh,Şirniyyat,Snacks & Sweets
+baku_fresh,Ərzaq,Pantry Staples
+baku_fresh,Ət və quş əti,Meat & Poultry
+baku_fresh,Meyvə-tərəvəz,Fruit & Vegetables
+baku_fresh,Məişət,Household
+baku_fresh,Gigiyena,Personal Care
+baku_fresh,Dondurulmuş,Frozen
+caspianmart,Dairy,Dairy & Eggs
+caspianmart,Bakery,Bakery
+caspianmart,Drinks,Beverages
+caspianmart,Snacks,Snacks & Sweets
+caspianmart,Grocery,Pantry Staples
+caspianmart,Meat,Meat & Poultry
+caspianmart,Produce,Fruit & Vegetables
+caspianmart,Household,Household
+caspianmart,Care,Personal Care
+caspianmart,Frozen,Frozen
+absheron,C01,Dairy & Eggs
+absheron,C02,Bakery
+absheron,C03,Beverages
+absheron,C04,Snacks & Sweets
+absheron,C05,Pantry Staples
+absheron,C06,Meat & Poultry
+absheron,C07,Fruit & Vegetables
+absheron,C08,Household
+absheron,C09,Personal Care
+absheron,C10,Frozen
+shirvan,Dairy & Eggs,Dairy & Eggs
+shirvan,Bakery,Bakery
+shirvan,Beverages,Beverages
+shirvan,Sweets & Snacks,Snacks & Sweets
+shirvan,Pantry,Pantry Staples
+shirvan,Meat & Poultry,Meat & Poultry
+shirvan,Fruit & Veg,Fruit & Vegetables
+shirvan,Home,Household
+shirvan,Beauty & Care,Personal Care
+shirvan,Frozen Foods,Frozen
+sumqayit,Молочные продукты,Dairy & Eggs
+sumqayit,Хлеб и выпечка,Bakery
+sumqayit,Напитки,Beverages
+sumqayit,Снеки и сладости,Snacks & Sweets
+sumqayit,Бакалея,Pantry Staples
+sumqayit,Мясо и птица,Meat & Poultry
+sumqayit,Овощи и фрукты,Fruit & Vegetables
+sumqayit,Бытовая химия,Household
+sumqayit,Гигиена,Personal Care
+sumqayit,Заморозка,Frozen

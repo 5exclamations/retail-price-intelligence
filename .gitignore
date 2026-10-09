@@ -1,0 +1,19 @@
+# generated data (reproducible with `make seed`)
+data/
+# local environments and caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.prefect/
+# dbt artifacts
+warehouse/target/
+warehouse/logs/
+warehouse/dbt_packages/
+# secrets: only the .env.example template is tracked
+.env
+*.pem
+*.key

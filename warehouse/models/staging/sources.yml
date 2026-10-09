@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: silver
+    description: Cleaned and validated tables written by the Python silver layer (rpi.silver).
+    schema: silver
+    tables:
+      - name: price_observation
+        description: Append-only price history, one row per item / store / day.
+        columns:
+          - name: price_qepik
+            tests: [not_null, positive, integer_typed]
+      - name: store_item
+      - name: store
+      - name: retailer
+      - name: product
+      - name: product_match

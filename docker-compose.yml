@@ -1,0 +1,65 @@
+# Retail Price Intelligence Platform: Postgres + one-shot pipeline + API + dashboard.
+#   docker compose up --build        # then open http://localhost:8501 (dashboard) and :8000/docs (API)
+# The pipeline service generates synthetic feeds, runs the full flow once and exits; the API and the
+# dashboard start after it finished successfully.
+name: rpi
+
+x-rpi: &rpi
+  build:
+    context: .
+    dockerfile: docker/rpi.Dockerfile
+  environment:
+    RPI_DATABASE_URL: postgresql://rpi:rpi@postgres:5432/rpi
+    RPI_PG_HOST: postgres
+    # Empty by default: the API's write endpoint stays disabled until you set a key (>= 16 characters).
+    RPI_API_KEY: ${RPI_API_KEY:-}
+  volumes:
+    - rpi-data:/app/data
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: rpi
+      POSTGRES_PASSWORD: rpi
+      POSTGRES_DB: rpi
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rpi -d rpi"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  pipeline:
+    <<: *rpi
+    depends_on:
+      postgres: {condition: service_healthy}
+    command: >
+      sh -c "python -m rpi.cli migrate &&
+             python -m rpi.cli generate --days 90 &&
+             python -m rpi.cli run --as-of 2026-09-30"
+    restart: "no"
+
+  api:
+    <<: *rpi
+    depends_on:
+      pipeline: {condition: service_completed_successfully}
+    command: uvicorn rpi.api.main:app --host 0.0.0.0 --port 8000
+    ports: ["8000:8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  dashboard:
+    <<: *rpi
+    depends_on:
+      pipeline: {condition: service_completed_successfully}
+    command: streamlit run rpi/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports: ["8501:8501"]
+
+volumes:
+  pgdata:
+  rpi-data:
