@@ -74,7 +74,7 @@ jobs:
           curl -sf "localhost:8000/v1/analytics/price-index" > /dev/null
       - name: Failure report
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with: {name: failure-reports, path: data/reports, if-no-files-found: ignore}
 
   docker:
